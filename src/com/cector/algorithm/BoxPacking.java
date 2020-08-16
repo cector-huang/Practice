@@ -39,12 +39,16 @@ public class BoxPacking {
                              {800, 330, 18, 0}};
         //要求将箱子放到最合适的箱子汇总，使得箱子的总个数最少
         preTreatment(panelList, boxPool);
+        for(int[] panel: panelList){
+            System.out.println(Arrays.toString(panel));
+        }
         Map<Box, List<Plate>> res = new HashMap<>();
         //最适合的箱子标准：长宽刚好对应到箱子，不会晃动；
         for(int[] panel: panelList){
             //每个面板遍历盒子，找到刚好装下自己的盒子
             for(int[] box: boxPool){
-                if(panel[0] == box[0] || panel[1] == box[1]){
+                //长度或宽度相等
+                if((panel[0] == box[0] && panel[1] <= box[1])){
                     Box tmp = new Box(box[0], box[1], box[2], box[3]);
                     if(res.containsKey(tmp)){
                         List<Plate> tmpPlate = res.get(tmp);
@@ -57,10 +61,12 @@ public class BoxPacking {
                     }
                     //该面板已经装箱
                     panel[3] = 1;
+                    break;
+                    //此处有优化空间，同一个板材可能对应到几个都合适的箱子，如何在这些箱子之间进去取舍？
                 }
             }
         }
-        //todo(根据当前装好的箱子，按照满箱的标砖选择面板)
+        //todo(根据当前装好的箱子，按照满箱的标准选择面板)
     }
 
     /**
@@ -134,6 +140,11 @@ class Box{
     public int hashCode(){
         return Objects.hash(this.Height, this.Width, this.Length, this.Floor);
     }
+
+    @Override
+    public String toString(){
+        return "{" + Length + ", " + Width + ", " + Height + ", " + Floor + "}";
+    }
 }
 
 class Plate{
@@ -145,6 +156,11 @@ class Plate{
         this.Length = Length;
         this.Width = Width;
         this.Heigth = Heigth;
+    }
+
+    @Override
+    public String toString(){
+        return "{" + Length + ", " + Width + ", " + Heigth + "}";
     }
 }
 
